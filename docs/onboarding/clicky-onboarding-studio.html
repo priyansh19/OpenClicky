@@ -1,0 +1,535 @@
+<title>Clicky Onboarding Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a long working document; each section pairs a live mock "screen" (desktop + teardrop notch + triangle) with the options to choose from. */
+:root{
+  --bg:#F2F3F6; --surface:#FFFFFF; --sunk:#E8EAF0; --fg:#14161B; --muted:#5B6170; --line:#D6D9E1;
+  --accent:#3A66F0; --accent-soft:#E3EAFE; --amber:#C98512; --amber-soft:#FBF0DA; --red:#D8343B; --red-soft:#FCE4E4; --green:#1E8E57; --green-soft:#DDF3E7;
+  /* mock screen is always "a Windows desktop at night", same in both themes */
+  --desk-a:#1B2340; --desk-b:#2C2350; --notch:#0E0F12; --notch-fg:#F5F6F8; --notch-mute:#9AA0AE;
+  --display:"Bricolage Grotesque","Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  --body:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1115; --surface:#171A21; --sunk:#1F232C; --fg:#ECEEF2; --muted:#9AA1B0; --line:#2A2F3A;
+  --accent:#6E92FF; --accent-soft:#1E2A4D; --amber:#F0B34A; --amber-soft:#3A2E17; --red:#FF6B70; --red-soft:#3D1D20; --green:#4CC58A; --green-soft:#16352A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1115; --surface:#171A21; --sunk:#1F232C; --fg:#ECEEF2; --muted:#9AA1B0; --line:#2A2F3A;
+  --accent:#6E92FF; --accent-soft:#1E2A4D; --amber:#F0B34A; --amber-soft:#3A2E17; --red:#FF6B70; --red-soft:#3D1D20; --green:#4CC58A; --green-soft:#16352A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55;padding:0 16px}
+.wrap{max-width:1080px;margin:0 auto;padding-block:40px 80px;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.05}
+h2{font-size:clamp(23px,3.2vw,30px)}
+h3{font-size:18px}
+p{margin:0;max-width:68ch}
+.eyebrow{font:600 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:17px;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:14px}
+section{display:flex;flex-direction:column;gap:20px}
+.sec-head{display:flex;flex-direction:column;gap:8px}
+a{color:var(--accent)}
+code,.mono{font-family:var(--mono);font-size:.88em}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+/* decision list */
+.decisions{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.dec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.dec .q{font-weight:600}
+.pick{display:inline-flex;gap:6px;align-items:center;font-size:13px;background:var(--accent-soft);color:var(--fg);border-radius:999px;padding:3px 10px;align-self:flex-start}
+.pick b{color:var(--accent)}
+
+/* tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:7px 14px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tab:focus-visible,.btn:focus-visible,.state:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rec{font:600 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-left:6px}
+
+/* studio: screen + script */
+.studio{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.studio{grid-template-columns:1fr}}
+.script{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.beat-meta{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.beat-id{font:600 12px var(--mono);color:var(--muted)}
+.beat-time{font:600 12px var(--mono);color:var(--accent);font-variant-numeric:tabular-nums}
+.beat-title{font-weight:650;font-size:16px}
+.said{border-left:2px solid var(--line);padding-left:10px;color:var(--muted);font-style:italic}
+.ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--sunk);color:var(--fg);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block}
+.dots i.on{background:var(--accent)}
+.proscons{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13.5px}
+.proscons ul{margin:4px 0 0;padding-left:18px}
+.proscons .h{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.proscons .plus .h{color:var(--green)} .proscons .minus .h{color:var(--red)}
+
+/* mock screen */
+.screen{position:relative;aspect-ratio:16/10;max-width:100%;border-radius:12px;overflow:hidden;background:radial-gradient(120% 90% at 20% 10%,var(--desk-b),var(--desk-a));box-shadow:0 1px 0 var(--line),0 18px 40px -24px rgba(10,14,30,.6);font-family:var(--body);color:var(--notch-fg);user-select:none}
+.taskbar{position:absolute;left:0;right:0;bottom:0;height:7.5%;background:rgba(20,22,30,.82);backdrop-filter:blur(6px);display:flex;justify-content:center;align-items:center;gap:1.6%}
+.tb{width:3.2%;aspect-ratio:1;border-radius:5px;background:rgba(255,255,255,.14)}
+.tb.start{background:none;display:grid;grid-template-columns:1fr 1fr;gap:8%;padding:12%}
+.tb.start i{background:#5AA2FF;border-radius:1px;aspect-ratio:1}
+.tb.folder{background:#F2C14E}
+.tb.edge{background:linear-gradient(135deg,#2BC5E8,#1A73E8)}
+.tb.xl{background:#1F9D55}
+.clock{position:absolute;right:2%;bottom:1.6%;font-size:clamp(8px,1.1vw,11px);color:#D7DAE2;text-align:right;line-height:1.2}
+.win{position:absolute;background:#F7F8FA;color:#1A1C22;border-radius:8px;box-shadow:0 12px 30px rgba(0,0,0,.45);overflow:hidden;font-size:clamp(8px,1.15vw,12.5px)}
+.win .bar{height:22px;background:#ECEEF2;display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:11px;color:#555}
+.win .bar .caps{letter-spacing:10px;color:#666}
+.win .in{padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.toggle{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #E3E5EA}
+.sw{width:26px;height:14px;border-radius:7px;background:#C9CDD6;position:relative}
+.sw::after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:#fff;top:2px;left:2px}
+.sw.on{background:#3A66F0}.sw.on::after{left:14px}
+.field{border:1px solid #CBD0DA;border-radius:5px;padding:5px 7px;min-height:2.2em;background:#fff}
+.chipx{display:inline-block;border:1px solid #CBD0DA;border-radius:999px;padding:1px 8px;margin:2px 3px 0 0;font-size:.9em}
+.chipx.on{background:#3A66F0;color:#fff;border-color:#3A66F0}
+.keyrow{display:flex;gap:4px;justify-content:center;margin-top:6px}
+.key{border:1px solid #BFC5D0;border-bottom-width:3px;border-radius:5px;padding:4px 7px;font-size:.85em;background:#fff;min-width:2.2em;text-align:center}
+.key.glow{border-color:#3A66F0;background:#E3EAFE;box-shadow:0 0 0 3px rgba(58,102,240,.25)}
+.big{font-family:var(--display);font-size:2.4em;line-height:1;color:#3A66F0}
+.card-you{background:#fff;border:1px solid #DDE1E8;border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:2px}
+.card-you .row{display:flex;gap:6px}.card-you .k{color:#6A7080;min-width:4.5em}
+.caption{position:absolute;left:50%;bottom:11%;transform:translateX(-50%);max-width:78%;background:rgba(10,11,14,.78);color:#fff;border-radius:6px;padding:4px 10px;font-size:clamp(9px,1.2vw,12.5px);text-align:center;transition:opacity .2s}
+.spot{position:absolute;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.5);transition:all .35s ease;pointer-events:none}
+.ghost{position:absolute;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:16px solid rgba(110,146,255,.45);transform:rotate(-30deg)}
+.curtain{position:absolute;inset:0;background:rgba(8,9,12,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:clamp(10px,1.4vw,14px);color:#E9EBF0}
+
+/* teardrop notch */
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--notch);color:var(--notch-fg);border-radius:0 0 16px 16px;overflow:hidden;
+  transition:width .18s ease-out,height .18s ease-out,border-radius .18s ease-out;box-shadow:0 6px 18px rgba(0,0,0,.35);z-index:5}
+.notch[data-size="drop"]{width:30px;height:18px;border-radius:0 0 15px 15px}
+.notch[data-size="pill"]{width:min(62%,350px);height:38px}
+.notch[data-size="card"]{width:min(72%,400px);border-radius:0 0 16px 16px}
+.n-in{display:flex;align-items:center;gap:9px;padding:0 12px;height:38px;white-space:nowrap;transition:opacity .12s}
+.notch[data-size="drop"] .n-in{justify-content:center;padding:0;height:18px}
+.notch[data-size="drop"] .n-txt,.notch[data-size="drop"] .n-chip{display:none}
+.n-txt{min-width:0;flex:1;display:flex;flex-direction:column;line-height:1.15}
+.n-t{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.n-s{font-size:10.5px;color:var(--notch-mute);overflow:hidden;text-overflow:ellipsis}
+.n-chip{font:600 10px var(--mono);border-radius:999px;padding:2px 7px;background:rgba(255,255,255,.1);color:var(--notch-fg)}
+.n-card{padding:0 14px 12px;display:flex;flex-direction:column;gap:6px;font-size:11.5px;white-space:normal}
+.n-card .acts{display:flex;gap:6px;flex-wrap:wrap}
+.n-btn{font-size:10.5px;border-radius:6px;padding:3px 8px;background:rgba(255,255,255,.1);color:var(--notch-fg);border:1px solid rgba(255,255,255,.12)}
+.n-btn.go{background:#3A66F0;border-color:#3A66F0}
+.n-btn.warn{background:#F0B34A;border-color:#F0B34A;color:#1b1406}
+.n-btn.link{background:none;border-color:transparent;color:var(--notch-mute);text-decoration:underline}
+.glyph{width:12px;height:12px;flex:none;display:grid;place-items:center}
+.g-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5)}
+.g-accent{width:9px;height:9px;border-radius:50%;background:#6E92FF}
+.g-orb{width:11px;height:11px;border-radius:50%;background:#FF4D55;box-shadow:0 0 0 0 rgba(255,77,85,.6);animation:pulse 1.1s infinite}
+.g-spin{width:11px;height:11px;border-radius:50%;border:2px solid rgba(110,146,255,.25);border-top-color:#6E92FF;animation:spin 1.2s linear infinite}
+.g-tri{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid #6E92FF}
+.g-tri.hollow{border-left-color:transparent;position:relative}
+.g-tri.hollow::before{content:"";position:absolute;left:-10px;top:-6px;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid #6E92FF;opacity:.45}
+.g-flag{color:#F0B34A;font-size:12px;font-weight:700}
+.g-ok{color:#4CC58A;font-size:13px;font-weight:700}
+.g-bang{color:#FF6B70;font-size:13px;font-weight:800}
+.g-pause{color:#9AA0AE;font-size:11px;font-weight:800;letter-spacing:-1px}
+.g-moon{width:10px;height:10px;border-radius:50%;box-shadow:inset -3px -1px 0 0 #C9CCD6}
+.g-rec{font:700 8.5px var(--mono);color:#fff;background:#E5484D;border-radius:2px;padding:1px 3px}
+.g-loop{color:#6E92FF;font-size:13px;font-weight:700}
+.g-block{color:#F0B34A;font-size:12px}
+.prog{position:absolute;left:0;bottom:0;height:2px;background:#6E92FF;transition:width .3s}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,77,85,.55)}100%{box-shadow:0 0 0 7px rgba(255,77,85,0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* triangle cursor */
+.tri{position:absolute;z-index:4;width:0;height:0;transition:left .9s cubic-bezier(.4,.1,.2,1),top .9s cubic-bezier(.4,.1,.2,1),transform .2s;transform-origin:50% 0}
+.tri .shape{position:absolute;left:-9px;top:0;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:16px solid #4F7CFF;filter:drop-shadow(0 2px 4px rgba(0,0,0,.45));transform:rotate(-28deg)}
+.tri.ring .shape::after{content:"";position:absolute;left:-14px;top:-4px;width:28px;height:28px;border-radius:50%;border:2px solid #4F7CFF;opacity:.8}
+.tri.hollow .shape{border-bottom-color:rgba(79,124,255,.35)}
+.tri .lbl{position:absolute;left:12px;top:14px;background:#4F7CFF;color:#fff;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.mousept{position:absolute;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:12px solid #fff;transform:rotate(-20deg);filter:drop-shadow(0 1px 1px #000);z-index:3}
+
+/* state gallery */
+.states{display:flex;flex-wrap:wrap;gap:6px}
+.state{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:5px 10px;cursor:pointer}
+.state[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.state .sid{font:600 10.5px var(--mono);color:var(--muted);margin-right:5px}
+
+/* tables & grids */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+.lv{display:inline-block;font:600 11px var(--mono);border-radius:5px;padding:2px 7px;white-space:nowrap}
+.L0{background:var(--red-soft);color:var(--red)}.L1{background:var(--sunk);color:var(--muted)}.L2{background:var(--amber-soft);color:var(--amber)}.L3{background:var(--accent-soft);color:var(--accent)}.L4{background:var(--green-soft);color:var(--green)}.Lg{background:var(--amber-soft);color:var(--amber);border:1px dashed var(--amber)}
+.ladder{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:720px){.ladder{grid-template-columns:1fr 1fr}}
+.rung{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.rung .n{font:600 11px var(--mono);color:var(--muted)}
+.rung b{font-family:var(--display);font-size:17px}
+.rung .say{font-size:12.5px;color:var(--accent)}
+.rung p{font-size:13px;color:var(--muted)}
+.ledger{font-family:var(--mono);font-size:12.5px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;white-space:pre;line-height:1.7}
+.ledger .gate{color:var(--amber)} .ledger .ok{color:var(--green)} .ledger .act{color:var(--accent)}
+.fixes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.fix{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.sev{font:600 10.5px var(--mono);letter-spacing:.06em;align-self:flex-start;border-radius:4px;padding:2px 6px}
+.s1{background:var(--red-soft);color:var(--red)} .s2{background:var(--amber-soft);color:var(--amber)}
+.files{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.file{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.file code{word-break:break-all}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:760px){.two,.proscons{grid-template-columns:1fr}}
+.note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+@media (prefers-reduced-motion:reduce){.tri,.notch,.spot{transition:none}.g-orb,.g-spin{animation:none}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Clicky for Windows · onboarding and agentic modes · ideation, 11 Oct 2026</span>
+  <h1>Clicky Onboarding Studio</h1>
+  <p class="lede">Five design agents worked in parallel: a rival teardown, first-run concepts, a "Windows teacher" mode, agentic modes with a trust ladder, and a UX red team. This page merges their best ideas into options you can pick from. Every mock below is clickable. The notch and triangle here are placeholders; the final look follows whatever the UI and notch redesign thread settles on.</p>
+</header>
+
+<section id="decide">
+  <div class="sec-head">
+    <span class="eyebrow">Start here</span>
+    <h2>Decisions for you</h2>
+    <p class="muted">Each one has a recommended answer. Reply in the thread with the ones you'd change; anything you don't mention, I'll treat as accepted.</p>
+  </div>
+  <div class="decisions">
+    <div class="dec"><span class="q">1. How should a new user meet Clicky?</span><span class="small muted">Three first-run concepts, shown below.</span><span class="pick">Pick: <b>A "Live"</b>, with B as fallback and C as optional</span></div>
+    <div class="dec"><span class="q">2. How does a non-technical user get past the API key?</span><span class="small muted">Today they hit "paste your keys" and quit.</span><span class="pick">Pick: <b>Sign in with OpenRouter</b>, after the key practice</span><span class="small muted">A hosted free starter is faster (no sign-in at all) but means running a server that sees screenshots. Say if you want it.</span></div>
+    <div class="dec"><span class="q">3. Which key writes text on Italian, German and French keyboards?</span><span class="small muted">There, Right Alt is AltGr, which types @ and €.</span><span class="pick">Pick: <b>detect the layout</b>; offer Caps Lock when AltGr exists</span></div>
+    <div class="dec"><span class="q">4. What phrase starts an agent task?</span><span class="small muted">The plan says "Agent, …", the app listens for "Clickey, …".</span><span class="pick">Pick: <b>"Clicky, …"</b> everywhere; "Agent, …" kept as a silent alias</span></div>
+    <div class="dec"><span class="q">5. Is "Windows teacher" a headline feature?</span><span class="small muted">Guide mode: Clicky points, you click, it checks the screen and moves on.</span><span class="pick">Pick: <b>yes</b>, Guide ships before more agent autonomy</span></div>
+    <div class="dec"><span class="q">6. How does agent autonomy grow?</span><span class="small muted">One global autopilot switch, or trust per app and per action.</span><span class="pick">Pick: <b>per app, earned</b>; send, buy and delete always ask</span></div>
+    <div class="dec"><span class="q">7. Notch when idle</span><span class="small muted">A small visible drop at the top, or hidden until you press the key.</span><span class="pick">Pick: <b>visible drop</b></span></div>
+    <div class="dec"><span class="q">8. When do we offer agent mode?</span><span class="small muted">The v1 plan offers it on day 2.</span><span class="pick">Pick: <b>day 7</b>, after asking and writing are habits</span></div>
+  </div>
+</section>
+
+<section id="first-run">
+  <div class="sec-head">
+    <span class="eyebrow">Part 1 · install to first answer</span>
+    <h2>Three ways to meet Clicky</h2>
+    <p class="muted">All three use the real hold key, the real mic and the real triangle; there are no slides or videos. The goal is a spoken answer within 60 seconds of the installer finishing, measured on the laptop. Step through each one.</p>
+  </div>
+  <div class="tabs" role="tablist" id="conceptTabs">
+    <button class="tab" role="tab" aria-selected="true" data-c="A">A · Live on your desktop <span class="rec">recommended</span></button>
+    <button class="tab" role="tab" aria-selected="false" data-c="B">B · Studio with a practice area</button>
+    <button class="tab" role="tab" aria-selected="false" data-c="C">C · Talk it through</button>
+  </div>
+  <div class="studio">
+    <div class="screen" id="scrFR" aria-label="Mock Windows desktop"></div>
+    <div class="script">
+      <div class="beat-meta"><span class="beat-id" id="frId"></span><span class="beat-time" id="frTime"></span></div>
+      <div class="beat-title" id="frTitle"></div>
+      <div class="said" id="frSaid"></div>
+      <p class="small muted" id="frNote"></p>
+      <div class="ctrl"><button class="btn" id="frPrev">Back</button><button class="btn primary" id="frNext">Next beat</button><div class="dots" id="frDots"></div></div>
+      <div class="proscons" id="frPC"></div>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th></th><th>A · Live</th><th>B · Studio</th><th>C · Talk it through</th></tr>
+    <tr><td>First spoken answer</td><td><b>about 12–15 s</b></td><td>about 20–25 s</td><td>about 25–30 s</td></tr>
+    <tr><td>Whole setup</td><td>about 60 s</td><td>about 70 s</td><td>about 80 s</td></tr>
+    <tr><td>"Tell a friend" moment</td><td><b>Highest</b>: it talked to me on my own desktop</td><td>Medium</td><td>High</td></tr>
+    <tr><td>Robust and testable</td><td>Lowest</td><td><b>Highest</b></td><td>Medium</td></tr>
+    <tr><td>Screen-reader friendly</td><td>Needs work</td><td><b>Best</b></td><td>Good</td></tr>
+    <tr><td>Personal from minute one</td><td>Name only (from the Windows account)</td><td>Name, sign-off, tone</td><td><b>Full profile card</b></td></tr>
+    <tr><td>Looks like HeyClicky's interview</td><td>No</td><td>No</td><td><b>Yes</b></td></tr>
+  </table></div>
+  <p class="note">Recommendation: build A as the spine. B's practice area opens on its own when the real desktop is a bad teacher (nothing open, pointing off by more than 24 px, or a screen reader running). C's profile card becomes an optional "Personalise (1 min)" step at the end. All times are design targets, not measurements.</p>
+</section>
+
+<section id="teacher">
+  <div class="sec-head">
+    <span class="eyebrow">Part 2 · Clicky as a Windows teacher</span>
+    <h2>Point, explain, guide, do it with me, do it</h2>
+    <p class="muted">No other Windows assistant teaches on your own screen and checks that you actually did the step. Clicky picks the mode from how you ask, and one word moves you up or down the ladder.</p>
+  </div>
+  <div class="ladder">
+    <div class="rung"><span class="n">1</span><b>Point</b><span class="say">"Where's…" "What's this?"</span><p>The triangle flies to it, labels it, says one sentence.</p></div>
+    <div class="rung"><span class="n">2</span><b>Explain</b><span class="say">"Why…" "What's the difference…"</span><p>Points, then says why it's there. Can draw an arrow.</p></div>
+    <div class="rung"><span class="n">3</span><b>Guide</b><span class="say">"How do I…" "Walk me through…"</span><p>One step card at a time. Waits until the screen shows you did it.</p></div>
+    <div class="rung"><span class="n">4</span><b>Do it with me</b><span class="say">"Help me do…"</span><p>Clicky does the dull steps with a ghost cursor; you do the ones worth learning.</p></div>
+    <div class="rung"><span class="n">5</span><b>Do it</b><span class="say">"Clicky, …" "Just do it"</span><p>Agent mode. Ends with "Show me how you did that".</p></div>
+  </div>
+  <div class="studio">
+    <div class="screen" id="scrT" aria-label="Mock first lesson"></div>
+    <div class="script">
+      <div class="beat-meta"><span class="beat-id" id="tId"></span><span class="beat-time" id="tTime"></span></div>
+      <div class="beat-title" id="tTitle"></div>
+      <div class="said" id="tSaid"></div>
+      <p class="small muted" id="tNote"></p>
+      <div class="ctrl"><button class="btn" id="tPrev">Back</button><button class="btn primary" id="tNext">Next beat</button><div class="dots" id="tDots"></div></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="script">
+      <h3>The first lesson is the skill check</h3>
+      <p class="small">"Open File Explorer, however you usually do." Clicky watches how you do it and sets your level for each track without a quiz: Win+E in 3 s means fluent; hunting the Start menu means beginner; a Cmd+Space reflex starts the "Coming from Mac" track. No score is ever shown.</p>
+    </div>
+    <div class="script">
+      <h3>Tracks</h3>
+      <p class="small">Windows basics · File Explorer · Excel · Outlook · Settings and privacy · Keyboard shortcuts · Coming from Mac · Staying safe (fake pop-ups, scam emails). Lessons are Markdown playbooks, so hand-written and generated ones share one format.</p>
+    </div>
+    <div class="script">
+      <h3>Teach someone else</h3>
+      <p class="small">A helper records a lesson once and sends it as a file; Clicky plays it as Guide on the other person's PC ("teach my mum"). "Record a how-to" exports a redacted step guide.</p>
+    </div>
+    <div class="script">
+      <h3>Agent runs become lessons</h3>
+      <p class="small">"Show me how you did that" replays an agent run slowly with narration, then hands over: "Now you." "Watch me once" records your demo and turns it into a playbook.</p>
+    </div>
+  </div>
+  <p class="note">Teacher MVP: Guide with screen-checked steps, the mode picker with voice switching, notch step cards with the ghost demo and hint ladder, the first lesson as skill check, and "Show me how you did that". One architecture flag: Guide has to watch the screen between key presses, which breaks today's rule that capture happens only while the key is held. It would need its own visible "Lesson · watching" state and an entry in the development plan.</p>
+</section>
+
+<section id="agentic">
+  <div class="sec-head">
+    <span class="eyebrow">Part 3 · agentic modes</span>
+    <h2>Seven modes, one trust ladder</h2>
+    <p class="muted">Clicky works out the mode from how you ask. How much it may do without asking changes only when you say so. Co-pilot and autopilot are one mode at two trust levels, so nobody flips a global autopilot switch and forgets it.</p>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>Mode</th><th>Who drives</th><th>When</th><th>Say</th><th>Notch</th></tr>
+    <tr><td><b>Ask</b></td><td>You</td><td>Now</td><td>Hold Right Ctrl and ask</td><td>Red orb, then answer</td></tr>
+    <tr><td><b>Guide</b></td><td>You</td><td>Now</td><td>"Show me how to…"</td><td>Hollow triangle, step dots</td></tr>
+    <tr><td><b>Do</b></td><td>Clicky</td><td>Now</td><td>"Clicky, sort my Downloads" · add "step by step" to approve each step</td><td>Solid triangle, step count</td></tr>
+    <tr><td><b>Later</b></td><td>Clicky</td><td>When you're away</td><td>"…when I'm away", "…tonight"</td><td>Moon with a queue count</td></tr>
+    <tr><td><b>Teach</b></td><td>You</td><td>Now</td><td>"Clicky, watch me"</td><td>Square REC badge with timer</td></tr>
+    <tr><td><b>Routine</b></td><td>Clicky</td><td>Schedule or trigger</td><td>"Every Monday at 9…", "Whenever a file lands in Downloads…"</td><td>Loop with a 10 s countdown</td></tr>
+    <tr><td><b>Suggestions</b></td><td>Clicky asks</td><td>At most once a day</td><td>Nothing. A card appears with Yes / Not now / Never</td><td>A small dot on the drop</td></tr>
+  </table></div>
+
+  <div class="sec-head"><h3>Notch states</h3><p class="small muted">Three sizes: a drop when idle, a pill while working, a card when it needs you. Amber always means "needs your OK"; red means recording or failure; green lasts 4 seconds on done. Pick a state:</p></div>
+  <div class="studio">
+    <div class="screen" id="scrN" aria-label="Mock notch states"></div>
+    <div class="script">
+      <div class="states" id="stateBtns"></div>
+      <div class="beat-title" id="nTitle"></div>
+      <p class="small muted" id="nNote"></p>
+    </div>
+  </div>
+
+  <div class="sec-head"><h3>Trust ladder, per app and per action</h3><p class="small muted">After five OKs in a row for the same kind of step in the same app, Clicky offers to stop asking. A decline or an undo drops it a level, and unused trust fades after 30 days. Sending, buying, deleting, installing and security settings never reach "trusted".</p></div>
+  <div class="tbl-wrap"><table>
+    <tr><th>App</th><th>Look</th><th>Navigate</th><th>Edit</th><th>Organise</th><th>Commit · send, buy, delete</th></tr>
+    <tr><td>File Explorer</td><td><span class="lv L4">L4 trusted</span></td><td><span class="lv L4">L4 trusted</span></td><td><span class="lv L4">L4 trusted</span></td><td><span class="lv L4">L4 trusted</span></td><td><span class="lv L2">always asks</span></td></tr>
+    <tr><td>Outlook</td><td><span class="lv L3">L3</span></td><td><span class="lv L3">L3</span></td><td><span class="lv L2">L2 ask each step</span></td><td><span class="lv L3">L3</span></td><td><span class="lv Lg">this task only</span></td></tr>
+    <tr><td>Excel</td><td><span class="lv L3">L3</span></td><td><span class="lv L3">L3</span></td><td><span class="lv L3">L3</span></td><td><span class="lv L3">L3 asks on risky</span></td><td><span class="lv L2">always asks</span></td></tr>
+    <tr><td>Figma (never seen)</td><td><span class="lv L2">L2</span></td><td><span class="lv L2">L2</span></td><td><span class="lv L2">L2</span></td><td><span class="lv L2">L2</span></td><td><span class="lv L2">always asks</span></td></tr>
+    <tr><td>Bitwarden, banking</td><td><span class="lv L0">L0 never</span></td><td><span class="lv L0">L0</span></td><td><span class="lv L0">L0</span></td><td><span class="lv L0">L0</span></td><td><span class="lv L0">never · can still Guide</span></td></tr>
+  </table></div>
+
+  <div class="sec-head"><h3>Every run leaves a receipt</h3><p class="small muted">The first-run "aha" is the receipt rather than the clicking: "I said one sentence, it did 40 boring clicks correctly, and told me exactly what it did and how to undo it."</p></div>
+  <div class="ledger">Tue 14:02 · Do · "Sort the messy test folder by type" · <span class="ok">done</span> · 63 steps · 4m 10s
+  <span class="ok">✓</span> 1–5    Opened ClickyTest\messy                              Navigate
+  <span class="ok">✓</span> 6      Created folder "PDFs"                                Organise   <span class="act">↶ can undo</span>
+  <span class="ok">✓</span> 7–60   Moved 54 files into 7 folders                        Organise   <span class="act">↶ can undo</span>
+  <span class="gate">⚑</span> 61     Deleted 3 empty .tmp files → Recycle Bin  <span class="gate">OK'd by you 14:05</span>   Commit   <span class="act">↶ recoverable</span>
+  <span class="ok">✓</span> 62–63  Checked: 60 files, 7 folders, count unchanged
+  [Undo whole run]  [Save as playbook]  [Make it a routine]</div>
+
+  <div class="two">
+    <div class="script">
+      <h3>Agent onboarding, in order</h3>
+      <p class="small">Guide first (day 1, no input permission needed) → rules and consent → the practice room: press Esc, grab the mouse, see the Send gate → a first real task suggested from your profile, with a plan preview → first trust offer → first background task after 3 good runs → first routine when a goal repeats → first Teach when you correct a failure.</p>
+    </div>
+    <div class="script">
+      <h3>When step 37 of 80 fails</h3>
+      <p class="small">The card says what's kept ("4 of 7 sheets exported"), why it's stuck, and what it tried, with Retry · Show me where · Skip this one · Stop and keep · Undo all. "Show me where" records you doing that one step, saves a lesson, and resumes from step 37. A failed run never says "done".</p>
+    </div>
+  </div>
+  <p class="note">Agent MVP, in order: trust basics (classes, gate reasons, the practice room) → receipts and recovery → earned autonomy and the first-run aha → long tasks with resume → background runs → authoring and suggestions. Six new pure modules in <code>packages/core</code>: trust, ledger, modes, queue, routine, playbook.</p>
+</section>
+
+<section id="rivals">
+  <div class="sec-head">
+    <span class="eyebrow">Part 4 · the field</span>
+    <h2>What the best rivals do, and the bar to beat</h2>
+    <p class="muted">These come from the rival teardown, which cites 41 sources. Vendors don't publish their onboarding times, so those numbers are inferred.</p>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>Who</th><th>What they do best</th><th>Gap Clicky fills</th></tr>
+    <tr><td><b>Wispr Flow</b></td><td>The best hotkey teaching: separate permission cards that each say why, a mic test with level bars, then a "try it yourself" sandbox with a fake Gmail and Notion.</td><td>Its personalisation is invisible ("learns your style over the first week").</td></tr>
+    <tr><td><b>Copilot Vision</b></td><td>"Highlights": say "show me how" and it shows where to click. The closest thing to Clicky's pointing.</td><td>It never clicks, only works inside voice chat, and nothing teaches you it exists.</td></tr>
+    <tr><td><b>Copilot / ChatGPT / Gemini</b></td><td>Just tell you "Alt+Space".</td><td>ChatGPT's shortcut silently fails if another app already uses it. Nobody proves the key works.</td></tr>
+    <tr><td><b>Operator, Claude for Chrome, Windows agent settings</b></td><td>Agent off by default, per-app consent (Allow always / Ask every time / Never), named autonomy levels, a hard "never" list, "your turn" at logins and payments.</td><td><b>Nobody makes you practise stopping the agent.</b> Clicky's Esc rehearsal is unique.</td></tr>
+    <tr><td><b>Grammarly, Duolingo</b></td><td>Learn in a demo document; sign up only after the first lesson (Duolingo saw about 20% more daily users).</td><td>Supports putting the first answer before any key or account.</td></tr>
+    <tr><td><b>Clippy, Cortana, Recall</b></td><td>The cautionary tales: Clippy interrupted and never learned your name, Cortana talked during Windows setup, Recall shipped on by default and had to be redone as opt-in.</td><td>Clicky is quiet until you press the key, and every capture is visible.</td></tr>
+  </table></div>
+  <div class="fixes">
+    <div class="fix"><span class="sev s2" style="background:var(--accent-soft);color:var(--accent)">TARGET</span><b>≤ 45 s median, ≤ 90 s for 90% of users</b><span class="small muted">From installer finish to the first spoken, pointed answer.</span></div>
+    <div class="fix"><span class="sev s2" style="background:var(--accent-soft);color:var(--accent)">TARGET</span><b>≤ 6 clicks, ≤ 4 screens</b><span class="small muted">No account and nothing typed before the first answer.</span></div>
+    <div class="fix"><span class="sev s2" style="background:var(--accent-soft);color:var(--accent)">TARGET</span><b>Key and mic proven</b><span class="small muted">Both work before the user moves on, merged into one held gesture.</span></div>
+    <div class="fix"><span class="sev s2" style="background:var(--accent-soft);color:var(--accent)">TARGET</span><b>Esc before the first real action</b><span class="small muted">The user has stopped a running agent once. There are no sends, deletes or purchases without an OK.</span></div>
+  </div>
+  <p class="note">One idea from the teardown bears on decision 2: let the first answer happen before any key is entered, so sign-in comes after the "wow". Without a hosted starter, that answer would have to be scripted. That is only honest inside concept B's practice area, where the question and answer are known, and never on the real desktop.</p>
+</section>
+
+<section id="fixes">
+  <div class="sec-head">
+    <span class="eyebrow">Part 5 · from the UX red team</span>
+    <h2>Fix these before any redesign</h2>
+    <p class="muted">These are cheap fixes for things in today's build that will lose users. The red team walked six personas through the plan: a 65-year-old new to AI, a sales rep on a locked-down laptop, a developer with three monitors, a student without Right Ctrl in a noisy dorm, a blind NVDA user, and an IT admin evaluating 40 seats.</p>
+  </div>
+  <div class="fixes">
+    <div class="fix"><span class="sev s1">LOSES USERS</span><b>Two different hold keys</b><span class="small muted">The done screen says Right Shift and the dashboard says Right Ctrl. Every surface should read the one setting.</span></div>
+    <div class="fix"><span class="sev s1">LOSES USERS</span><b>"You're all set" comes too early</b><span class="small muted">It shows before the mic or key has been tested. Say "Almost there" until the first answer lands.</span></div>
+    <div class="fix"><span class="sev s1">LOSES USERS</span><b>"Allow all" looks like Stop</b><span class="small muted">It has the same red outline as Stop. Make it "Allow for this task", tucked in a menu, and never let it cover anything that can't be undone.</span></div>
+    <div class="fix"><span class="sev s1">LOSES USERS</span><b>Right Alt is AltGr in Europe</b><span class="small muted">On Italian and German keyboards, typing an email address would start dictation. Pick the default from the keyboard layout.</span></div>
+    <div class="fix"><span class="sev s2">LOOKS UNFINISHED</span><b>Mac window buttons on a Windows installer</b><span class="small muted">The red, amber and green dots should become Windows caption buttons, or just an ×.</span></div>
+    <div class="fix"><span class="sev s2">LOOKS UNFINISHED</span><b>Three looks in 30 seconds</b><span class="small muted">A beige installer, a dark dashboard with a green accent, and a blue cursor. Use one surface style, with the accent matching the cursor colour.</span></div>
+    <div class="fix"><span class="sev s2">LOOKS UNFINISHED</span><b>Empty stats read as broken</b><span class="small muted">"0 / – / –" on day one. Show "Ask your first question to see your speed."</span></div>
+    <div class="fix"><span class="sev s2">LOOKS UNFINISHED</span><b>Key clashes</b><span class="small muted">Holding Right Shift for 8 s opens Filter Keys, many new laptops have a Copilot key instead of Right Ctrl, and Ctrl silences screen readers. Detect each one and offer another key.</span></div>
+  </div>
+</section>
+
+<section id="files">
+  <div class="sec-head">
+    <span class="eyebrow">Source material</span>
+    <h2>Full write-ups</h2>
+    <p class="muted">Each agent's full document is in the project files under <code>onboarding/ideation/</code>, with exact copy, spoken lines, fallbacks for every Windows edge case, metrics and build sketches.</p>
+  </div>
+  <div class="files" id="fileList">
+    <div class="file"><b>Rival teardown</b><code>01-competitive-teardown.md</code><span class="small muted">Copilot, ChatGPT, Gemini Live, Wispr Flow, WalkMe and others: patterns to copy, patterns to avoid, and the bar to beat.</span></div>
+    <div class="file"><b>First-run concepts</b><code>02-first-run-concepts.md</code><span class="small muted">A, B and C beat by beat, the API-key options, SmartScreen, and 20 small delights.</span></div>
+    <div class="file"><b>Windows teacher</b><code>03-windows-teacher.md</code><span class="small muted">The ladder, how Guide knows a step is done, tracks, 31 ranked ideas, and the first lesson word for word.</span></div>
+    <div class="file"><b>Agentic modes</b><code>04-agentic-modes.md</code><span class="small muted">Modes, the trust ladder, the receipt, 12 notch states, failure recovery, and 28 ranked features.</span></div>
+    <div class="file"><b>UX red team</b><code>05-ux-red-team.md</code><span class="small muted">Six personas, about 40 Windows failure cases with exact wording, the privacy screen, and a usability test plan.</span></div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const G={dot:'<span class="g-dot"></span>',accent:'<span class="g-accent"></span>',orb:'<span class="g-orb"></span>',spin:'<span class="g-spin"></span>',tri:'<span class="g-tri"></span>',hollow:'<span class="g-tri hollow"></span>',flag:'<span class="g-flag">⚑</span>',ok:'<span class="g-ok">✓</span>',bang:'<span class="g-bang">!</span>',pause:'<span class="g-pause">❚❚</span>',moon:'<span class="g-moon"></span>',rec:'<span class="g-rec">REC</span>',loop:'<span class="g-loop">⟳</span>',block:'<span class="g-block">⛔</span>',stop:'<span class="g-pause">■</span>'};
+
+function desktop(extra){return `<div class="taskbar"><div class="tb start"><i></i><i></i><i></i><i></i></div><div class="tb"></div><div class="tb folder"></div><div class="tb edge"></div><div class="tb xl"></div></div><div class="clock">16:12<br>11/10/2026</div>${extra||''}`;}
+
+function makeScreen(el){
+  el.innerHTML='<div class="layer"></div><div class="notch" data-size="drop"><div class="n-in"><span class="glyph"></span><span class="n-txt"><span class="n-t"></span><span class="n-s"></span></span><span class="n-chip" hidden></span></div><div class="n-card" hidden></div><div class="prog" style="width:0"></div></div><div class="mousept" style="left:62%;top:58%"></div><div class="tri" style="left:64%;top:60%"><div class="shape"></div></div><div class="caption" hidden></div>';
+  return {
+    layer:el.querySelector('.layer'),notch:el.querySelector('.notch'),tri:el.querySelector('.tri'),cap:el.querySelector('.caption'),mouse:el.querySelector('.mousept'),
+    set(b){
+      this.layer.innerHTML=b.stage!==undefined?b.stage:desktop();
+      const n=b.notch||{size:'drop',g:'dot'};
+      this.notch.dataset.size=n.size;
+      this.notch.querySelector('.glyph').innerHTML=G[n.g]||'';
+      this.notch.querySelector('.n-t').innerHTML=n.t||'';
+      this.notch.querySelector('.n-s').innerHTML=n.s||'';
+      const chip=this.notch.querySelector('.n-chip');chip.hidden=!n.chip;chip.textContent=n.chip||'';
+      const card=this.notch.querySelector('.n-card');card.hidden=n.size!=='card';card.innerHTML=n.card||'';
+      this.notch.querySelector('.prog').style.width=(n.prog||0)+'%';
+      if(n.size==='card'){this.notch.style.height='auto';}else{this.notch.style.height='';}
+      const t=b.tri||{x:64,y:60};
+      this.tri.hidden=!!t.hide;
+      this.tri.style.left=t.x+'%';this.tri.style.top=t.y+'%';
+      this.tri.className='tri'+(t.ring?' ring':'')+(t.hollow?' hollow':'');
+      this.tri.style.transform=t.big?'scale(1.15)':'';
+      this.tri.querySelector('.shape').innerHTML='';
+      const old=this.tri.querySelector('.lbl');if(old)old.remove();
+      if(t.label){const l=document.createElement('span');l.className='lbl';l.textContent=t.label;this.tri.appendChild(l);}
+      this.mouse.style.display=b.noMouse?'none':'';
+      this.cap.hidden=!b.cap;this.cap.textContent=b.cap||'';
+    }
+  };
+}
+
+/* ---------- first-run concepts ---------- */
+const pad=(txt)=>`<div class="win" style="left:30%;top:24%;width:40%"><div class="bar"><span>Clicky scratch pad</span><span class="caps">– ×</span></div><div class="in"><div class="field">${txt||'<span style="color:#999">Click here, then hold Right Alt…</span>'}</div></div></div>`;
+const wiz=(left,right)=>`<div class="win" style="left:9%;top:14%;width:82%;height:70%"><div class="bar"><span>Clicky</span><span class="caps">– □ ×</span></div><div class="in" style="flex-direction:row;gap:12px;height:calc(100% - 22px)"><div style="flex:0 0 38%;display:flex;flex-direction:column;gap:6px;justify-content:center">${left}</div><div style="flex:1;background:#EEF0F4;border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:4px;justify-content:center">${right}</div></div></div>`;
+const toggles=(on)=>`<b style="font-size:1.05em">Sync settings</b><div class="toggle"><span>Sync now</span><span class="sw on"></span></div><div class="toggle"><span>${on?'Low-data mode':'&nbsp;'}</span><span class="sw ${on?'on':''}"></span></div><div class="toggle"><span>Backups</span><span class="sw"></span></div>`;
+const mail=(reply)=>`<b>Maya Ricci</b><span style="color:#666">Could we move our call to Thursday?</span><div class="field" style="min-height:4em">${reply||'<span style="color:#999">Reply…</span>'}</div>`;
+const convo=(lines,card)=>`<div class="win" style="left:27%;top:9%;width:46%;height:76%"><div class="in" style="height:100%;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:5px">${lines.map(l=>`<div style="align-self:${l[0]==='me'?'flex-end':'flex-start'};background:${l[0]==='me'?'#3A66F0':'#EDEFF3'};color:${l[0]==='me'?'#fff':'#1A1C22'};border-radius:8px;padding:3px 8px;max-width:85%">${l[1]}</div>`).join('')}</div><div class="card-you"><b style="font-size:.95em">About you</b>${card}</div></div></div>`;
+const crow=(k,v)=>`<div class="row"><span class="k">${k}</span><span>${v||'<span style="color:#aaa">…</span>'}</span></div>`;
+
+const concepts={
+A:{pros:['The onboarding is the product: nothing to unlearn','Comfortably beats 60 s (about 15 s)','Users meet the notch in the first second'],cons:['Hardest to make robust; one failure and there is no home screen to fall back to','Less room for privacy and provider choices','Needs deferral logic (meetings, full-screen apps)'],beats:[
+ {id:'A1',time:'0–4 s',title:'Arrival on your real desktop',said:'Silent. Clicky never speaks before your first key press.',note:'The notch drops in. The triangle fades in beside your real mouse pointer and nudges once toward the notch.',notch:{size:'pill',g:'accent',t:"Hi, I'm Clicky. Hold Right Ctrl.",s:"Hold it, don't tap."},tri:{x:64,y:60}},
+ {id:'A2',time:'4–8 s',title:'Key down',said:'(listening)',note:'The red recording orb lives in the notch now, with a live level ring. A suggestion chip helps people who freeze.',notch:{size:'pill',g:'orb',t:'Listening… ask about your screen',s:'Try: "What can you do?"',chip:'RCtrl'},tri:{x:64,y:60,big:true,ring:true}},
+ {id:'A3',time:'8–14 s',title:'First answer points at something real',said:'"I look at your screen when you hold Right Ctrl and talk. Watch: this is your Start button."',note:'The Start button is a known target, so this answer also measures pointing error for free and catches DPI bugs.',notch:{size:'pill',g:'spin',t:'what can you do',s:'Answering…'},tri:{x:37,y:90,label:'Start'},cap:'Watch: this is your Start button.'},
+ {id:'A4',time:'14–18 s',title:'Celebrate with a real number',said:'"Now try one about whatever you\'re working on."',note:'Show the real time, once and big. No confetti.',notch:{size:'pill',g:'ok',t:"That's it. First answer in 11 s.",s:'0.8 s after you let go'},tri:{x:64,y:60}},
+ {id:'A6',time:'35–42 s',title:'The other key: Write',said:'(silent)',note:'If no text box is focused after 6 s, a small scratch pad opens under the notch. On AltGr keyboards Clicky offers Caps Lock first.',stage:desktop(pad()),notch:{size:'pill',g:'accent',t:'Now hold Right Alt in any text box',s:'Say what you want written'},tri:{x:46,y:34}},
+ {id:'A7',time:'42–55 s',title:'First Write, signed with your name',said:'"Written. Ctrl+Z undoes it."',note:'The name comes from the Windows account, so the first note is signed correctly without asking.',stage:desktop(pad('Hi Sam, thanks so much for today. Talk soon!<br>Priyansh')),notch:{size:'pill',g:'ok',t:'Written',s:'Ctrl+Z undoes it'},tri:{x:51,y:36}},
+ {id:'A9',time:'≤ 65 s',title:"You're set, and the notch stays",said:'"I\'ll be up here when you need me."',note:'The card folds back into the drop at the top. That is where Clicky lives, so no tray lesson is needed.',notch:{size:'card',g:'ok',t:"You're set",s:'',card:'<span>✓ Ask · Right Ctrl &nbsp; ✓ Write · Right Alt &nbsp; ✓ Starts with Windows</span><div class="acts"><span class="n-btn go">Open Clicky</span><span class="n-btn">Personalise (1 min)</span></div>'},tri:{x:50,y:9}}
+]},
+B:{pros:['Most controllable and testable','The practice area guarantees a good first answer','Smallest change from today\'s wizard'],cons:['Feels like a wizard, so it is forgettable','The real-desktop magic comes last, or never','About 20–25 s to the first answer'],beats:[
+ {id:'B1',time:'0–4 s',title:'Hello',said:'(silent)',note:'Left: one line and one button. Right: a practice area rendered live by the overlay engine.',stage:desktop(wiz('<b style="font-size:1.3em">Ask about your screen. Get an answer out loud.</b><span style="color:#666">Takes under a minute.</span><span class="chipx on" style="align-self:flex-start">Start</span>',toggles(false))),notch:{size:'pill',g:'spin',t:'Setting up',s:'Warming the mic and voice'},tri:{x:64,y:60}},
+ {id:'B2',time:'4–10 s',title:'Hold the key',said:'(silent)',note:'The drawn keyboard matches the active layout (QWERTY, QWERTZ, AZERTY). After 8 s: "No Right Ctrl? Press the key you want."',stage:desktop(wiz('<b style="font-size:1.3em">Hold Right Ctrl.</b><span style="color:#666">Keep holding while you talk.</span>','<div class="keyrow"><span class="key">Alt</span><span class="key" style="min-width:8em">space</span><span class="key">AltGr</span><span class="key glow">Ctrl</span></div>')),notch:{size:'pill',g:'orb',t:'Listening…',s:''},tri:{x:66,y:58,ring:true}},
+ {id:'B3',time:'10–22 s',title:'First answer, inside the practice area',said:'"That one turns on low-data mode: it stops syncing photos on metered networks."',note:'The toggle has known coordinates, so this beat doubles as a DPI calibration.',stage:desktop(wiz('<b style="font-size:1.3em">Ask: "What does this switch do?"</b>',toggles(true))),notch:{size:'pill',g:'spin',t:'what does this switch do',s:'Answering…'},tri:{x:83,y:47,label:'Low-data mode'},cap:'That one turns on low-data mode.'},
+ {id:'B4',time:'22–25 s',title:'The win',said:'(none)',note:'The real number, big. A single ring pulse on the toggle.',stage:desktop(wiz('<span style="color:#666">Your first answer</span><span class="big">0.9 s</span><span style="color:#666">after you let go</span>',toggles(true))),notch:{size:'pill',g:'ok',t:'First answer',s:'0.9 s'},tri:{x:64,y:60}},
+ {id:'B5',time:'25–42 s',title:'Write a reply',said:'"Written."',note:'The canvas becomes an email. Hold Right Alt and say "Tell her Thursday works, and thank her."',stage:desktop(wiz('<b style="font-size:1.15em">Click the reply box. Hold Right Alt and say what to write.</b>',mail('Hi Maya, Thursday works for me. Thanks for being flexible!<br>Priyansh'))),notch:{size:'pill',g:'ok',t:'Written',s:'Ctrl+Z undoes it'},tri:{x:72,y:56}},
+ {id:'B6',time:'42–55 s',title:'Make it yours',said:'(none)',note:'The reply re-renders live as you change the tone chips. That is the visible payoff.',stage:desktop(wiz('<b style="font-size:1.15em">How should I write for you?</b><div><span class="chipx on">Short</span><span class="chipx on">Friendly</span><span class="chipx">Formal</span><span class="chipx on">No emoji</span></div>',mail('Thursday works. Thanks, Maya.<br>Priyansh'))),notch:{size:'drop',g:'dot'},tri:{x:30,y:52}},
+ {id:'B7',time:'55–70 s',title:'Out into the wild',said:'"I\'m up here."',note:'"Minimise and try" hides the window. One real answer on the real desktop finishes setup.',notch:{size:'pill',g:'accent',t:'Hold Right Ctrl and ask about anything',s:'Works on all your screens'},tri:{x:50,y:9}}
+]},
+C:{pros:['The most personal: the profile is visible and editable','Mic and speakers are proven in one natural exchange','Best writing quality on day 7'],cons:['Slowest (about 80 s)','Close to HeyClicky\'s interview, so it reads as derivative','Talks a lot in a quiet office'],beats:[
+ {id:'C1',time:'0–8 s',title:'Say hello',said:'Caption only: "Hold Right Ctrl and say hello so I know I can hear you."',note:'The window grows out of the notch.',stage:desktop(convo([['cl','Hold Right Ctrl and say hello.']],crow('Name')+crow('Work')+crow('Tone'))),notch:{size:'pill',g:'orb',t:'Listening…',s:'hello ✓'},tri:{x:64,y:60,ring:true}},
+ {id:'C2',time:'8–16 s',title:'Two-way sound check',said:'"Hi! I can hear you. Can you hear me? Hold the key and say yes."',note:'"I can\'t hear you" switches to captions-first.',stage:desktop(convo([['cl','Hold Right Ctrl and say hello.'],['me','hello'],['cl','I can hear you. Can you hear me?'],['me','yes']],crow('Name')+crow('Work')+crow('Tone'))),notch:{size:'pill',g:'ok',t:'Mic and speakers work',s:''},tri:{x:64,y:60}},
+ {id:'C3',time:'16–32 s',title:'First real answer',said:'"It\'s 16:12. That\'s your taskbar clock."',note:'The user picks the target, so there is no calibration value here.',stage:desktop(convo([['cl','Ask me about anything on your screen.'],['me','what\'s this?']],crow('Name')+crow('Work')+crow('Tone')+crow('First answer','✓ 0.8 s'))),notch:{size:'pill',g:'spin',t:"what's this",s:'Answering…'},tri:{x:93,y:91,label:'Clock'}},
+ {id:'C5',time:'32–50 s',title:'Name and work fill the card',said:'"What do you mostly do on this computer?"',note:'Each answer types into the card, where it can be edited. Work turns on matching playbooks.',stage:desktop(convo([['cl','What should I call you?'],['me','Priyansh'],['cl','What do you mostly do on this computer?'],['me','client emails and spreadsheets']],crow('Name','Priyansh ✎')+crow('Work','client emails, spreadsheets')+crow('Playbooks','☑ Email replies ☑ Excel helper')+crow('Tone'))),notch:{size:'drop',g:'dot'},tri:{x:64,y:60}},
+ {id:'C7',time:'65–75 s',title:'Tone rewrites the demo live',said:'"How should your writing sound?"',note:'"Short, no emojis." The Write demo above rewrites itself.',stage:desktop(convo([['cl','Hold Right Alt and tell me what to write.'],['me','tell Sam I\'ll send the numbers tomorrow'],['cl','Sam, numbers coming tomorrow. Priyansh']],crow('Name','Priyansh')+crow('Work','client emails, spreadsheets')+crow('Tone','short, no emoji'))),notch:{size:'pill',g:'ok',t:'Written',s:''},tri:{x:50,y:30}},
+ {id:'C8',time:'75–80 s',title:'Folds back into the notch',said:'"Done. I\'ll live up here. Hold Right Ctrl any time."',note:'The window shrinks into the notch in 200 ms; the triangle points at it once.',notch:{size:'drop',g:'dot'},tri:{x:50,y:9}}
+]}};
+
+const fr=makeScreen($('#scrFR'));let cKey='A',ci=0;
+function dots(el,n,i){el.innerHTML=Array.from({length:n},(_,k)=>`<i class="${k<=i?'on':''}"></i>`).join('');}
+function renderFR(){
+  const c=concepts[cKey],b=c.beats[ci];fr.set(b);
+  $('#frId').textContent=b.id;$('#frTime').textContent=b.time;$('#frTitle').textContent=b.title;$('#frSaid').textContent=b.said;$('#frNote').textContent=b.note;
+  dots($('#frDots'),c.beats.length,ci);$('#frPrev').disabled=ci===0;$('#frNext').textContent=ci===c.beats.length-1?'Start over':'Next beat';
+  $('#frPC').innerHTML=`<div class="plus"><span class="h">For</span><ul>${c.pros.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="minus"><span class="h">Against</span><ul>${c.cons.map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+}
+$('#frNext').onclick=()=>{ci=(ci+1)%concepts[cKey].beats.length;renderFR();};
+$('#frPrev').onclick=()=>{if(ci>0){ci--;renderFR();}};
+document.querySelectorAll('#conceptTabs .tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('#conceptTabs .tab').forEach(x=>x.setAttribute('aria-selected',x===t));cKey=t.dataset.c;ci=0;renderFR();});
+renderFR();
+
+/* ---------- teacher lesson ---------- */
+const explorer=(snap)=>`<div class="win" style="left:${snap?'0':'22'}%;top:${snap?'0':'16'}%;width:${snap?'50':'52'}%;height:${snap?'92.5':'58'}%"><div class="bar"><span>File Explorer</span><span class="caps">– □ ×</span></div><div class="in"><span>📁 Documents</span><span>📁 Downloads</span><span>📁 Pictures</span></div></div>`;
+const keycaps=`<div style="position:absolute;left:50%;top:44%;transform:translateX(-50%);display:flex;gap:6px"><span class="key glow" style="font-size:14px">⊞ Win</span><span class="key" style="font-size:14px">←</span></div>`;
+const lesson=[
+ {id:'Intro',time:'0 s',title:'Two windows, side by side',said:'"You do the clicking; I\'ll point. Say wait any time, or press Esc to stop."',note:'Entry is a card on the Today page. The notch becomes a step card with progress dots.',notch:{size:'pill',g:'hollow',t:'First lesson · Guide',s:'●○○'},tri:{x:64,y:60,hollow:true}},
+ {id:'Step 1',time:'0–8 s',title:'Open File Explorer, however you usually do',said:'"First, open File Explorer, however you usually do."',note:'No spotlight yet: Clicky is watching how you do it. That is the skill check. Done when an Explorer window is in front.',notch:{size:'pill',g:'hollow',t:'Open File Explorer',s:'●○○ Step 1 of 3'},tri:{x:64,y:60,hollow:true}},
+ {id:'Hint · 8 s',time:'8 s',title:'Nothing yet, so the hint ladder starts',said:'"It\'s the yellow folder at the bottom of the screen, on the taskbar."',note:'At 8 s a spotlight dims everything except the target (click-through). At 20 s a ghost cursor shows the click.',stage:desktop('<div class="spot" style="left:46.2%;top:92.6%;width:4.6%;height:6.6%"></div>'),notch:{size:'pill',g:'hollow',t:'Open File Explorer',s:'●○○ Step 1 of 3'},tri:{x:48.5,y:92,hollow:true,label:'File Explorer'}},
+ {id:'Step 2',time:'≈ 20 s',title:'Snap it to the left half',said:'"Press the Windows key and the left arrow together."',note:'Big keycaps light up as the keyboard hook sees each key. Dragging to the edge is also accepted.',stage:desktop(explorer(false)+keycaps),notch:{size:'pill',g:'hollow',t:'Snap this window to the left half',s:'●●○ Step 2 of 3'},tri:{x:64,y:60,hollow:true}},
+ {id:'Step 3',time:'≈ 35 s',title:'Pick a window for the right side',said:'"Windows is offering the right half. Click any window to fill it."',note:'Done when a second window fills the right half, at any DPI (±2%).',stage:desktop(explorer(true)+'<div class="spot" style="left:52%;top:4%;width:46%;height:86%;border:2px dashed #6E92FF"></div>'),notch:{size:'pill',g:'hollow',t:'Pick a window for the right side',s:'●●○ Step 3 of 3'},tri:{x:74,y:40,hollow:true}},
+ {id:'Done',time:'≈ 45 s',title:'Takeaway card, then the shortcut coach',said:'"Done! Two windows, side by side. Windows plus left or right does it any time."',note:'Writes "Windows: comfortable · Shortcuts: learning" to the profile. The shortcut comes back once or twice this week as a silent notch nudge.',stage:desktop(explorer(true)+'<div class="win" style="left:50%;top:0;width:50%;height:92.5%"><div class="bar"><span>Excel</span><span class="caps">– □ ×</span></div></div>'),notch:{size:'card',g:'ok',t:'Done',s:'●●●',card:'<b style="font-size:13px">⊞ Win + ← / →</b><span>Snap a window to half the screen.</span><div class="acts"><span class="n-btn">Practise later</span><span class="n-btn go">Next lesson: Find any file</span></div>'},tri:{x:64,y:60}}
+];
+const tl=makeScreen($('#scrT'));let ti=0;
+function renderT(){const b=lesson[ti];tl.set(b);$('#tId').textContent=b.id;$('#tTime').textContent=b.time;$('#tTitle').textContent=b.title;$('#tSaid').textContent=b.said;$('#tNote').textContent=b.note;dots($('#tDots'),lesson.length,ti);$('#tPrev').disabled=ti===0;$('#tNext').textContent=ti===lesson.length-1?'Start over':'Next beat';}
+$('#tNext').onclick=()=>{ti=(ti+1)%lesson.length;renderT();};$('#tPrev').onclick=()=>{if(ti>0){ti--;renderT();}};
+renderT();
+
+/* ---------- notch states ---------- */
+const practice=`<div class="win" style="left:20%;top:22%;width:60%;height:56%"><div class="bar"><span>Clicky practice room</span><span class="caps">– ×</span></div><div class="in"><span>☑ ☑ ☑ ☑ ☑ ☑ ☐ ☐ ☐ ☐</span><div class="field">hi Sam</div><span class="chipx" style="align-self:flex-start">Send</span></div></div>`;
+const states=[
+ {id:'S0',name:'Idle',note:'A tiny drop with a hollow dot. Visible on purpose: you can always see that Clicky is there and doing nothing.',notch:{size:'drop',g:'dot'}},
+ {id:'S1',name:'Listening',note:'The red orb moves into the notch and pulses with your voice. The triangle gets a ring while capture is on.',notch:{size:'pill',g:'orb',t:'sort my downloads by type',s:'Listening…'},tri:{x:64,y:60,ring:true}},
+ {id:'S2',name:'Planning',note:'Shows the mode word for 1.2 s first ("Do", "Guide", "Later") so you always know which mode it chose.',notch:{size:'pill',g:'spin',t:'Do · Sort Downloads',s:'Planning…'}},
+ {id:'S3',name:'Acting · step N',note:'Goal on top, current action below, step count on the right, progress hairline on the bottom edge. The triangle flies to each target before acting.',notch:{size:'pill',g:'tri',t:'Sort Downloads',s:'Moving invoice.pdf',chip:'18 / ~40',prog:45},tri:{x:40,y:46,label:'invoice.pdf'},stage:desktop(explorer(false))},
+ {id:'S3b',name:'Step by step',note:'Co-pilot at trust level L2: every step waits for a tap of Right Ctrl or Enter.',notch:{size:'card',g:'tri',t:'Step by step',s:'',card:'<span>Click <b>Reply</b>?</span><div class="acts"><span class="n-btn go">OK · Right Ctrl</span><span class="n-btn">Skip · S</span><span class="n-btn">Stop · Esc</span></div>'},tri:{x:55,y:44,ring:true,label:'Reply'}},
+ {id:'S4',name:'Needs your OK',note:'Amber, always with the reason. "Allow all" becomes a quiet "Allow for this task", and the ✕ badge warns before an irreversible step.',notch:{size:'card',g:'flag',t:'Send this email to Blu Revolution?',s:'',card:'<span style="color:#F0B34A">✕ Can\'t be undone · asking because sending is always checked</span><div class="acts"><span class="n-btn warn">Send</span><span class="n-btn">Don\'t send</span><span class="n-btn">Stop</span><span class="n-btn link">Allow for this task</span></div>'},tri:{x:58,y:48,ring:true,label:'Send'},stage:desktop(practice)},
+ {id:'S5',name:'Paused: you moved',note:'Any real mouse or key input pauses within 100 ms. Keep still for 3 s and it carries on.',notch:{size:'pill',g:'pause',t:"You've got the mouse",s:"I'll carry on when you stop"},tri:{x:70,y:62}},
+ {id:'S6',name:'Blocked',note:'Never-touch apps and password fields hand control back, with Guide offered instead.',notch:{size:'card',g:'block',t:'Bitwarden is on your never-touch list',s:'',card:'<div class="acts"><span class="n-btn go">Show me instead</span><span class="n-btn">Stop</span></div>'}},
+ {id:'S7',name:'Done',note:'Green for 4 seconds, with Undo right there. A trust offer can follow ("Let me move files in Explorer without asking?").',notch:{size:'pill',g:'ok',t:'Done · 41 steps',s:'Moved 38 files into 6 folders',chip:'Undo'}},
+ {id:'S8',name:'Stuck at step 37',note:'It says what was kept and what it tried, then offers ways forward. A failed run never says "done".',notch:{size:'card',g:'bang',t:'Stuck at step 37: can\'t find Export in Excel',s:'',card:'<span>Kept: 36 steps · 4 of 7 sheets exported. Tried the ribbon twice, then the File menu.</span><div class="acts"><span class="n-btn go">Show me where</span><span class="n-btn">Retry</span><span class="n-btn">Skip this sheet</span><span class="n-btn">Stop · keep</span><span class="n-btn">Undo all</span></div>'}},
+ {id:'S9',name:'Queued / away',note:'A moon with a count. While you are away, a curtain hides the screen from passers-by but is left out of Clicky\'s own screenshots (to be verified on the laptop).',notch:{size:'drop',g:'moon'},stage:desktop('<div class="curtain"><b>Clicky is working</b><span>Sort Downloads · step 4</span><span style="opacity:.7">Press any key to take over</span></div>'),tri:{hide:true}},
+ {id:'S10',name:'Teach · recording',note:'A square REC badge, never confused with the round listening orb. Screenshots are distilled into steps and then discarded.',notch:{size:'pill',g:'rec',t:'Recording: do it your way',s:'Say "done" to finish',chip:'0:42'}},
+ {id:'S11',name:'Routine starting',note:'A 10 s countdown before any scheduled run, with Now and Later.',notch:{size:'pill',g:'loop',t:'Monday report in 10 s',s:'Excel edit · Outlook draft only',chip:'Later'}}
+];
+const ns=makeScreen($('#scrN'));
+const sb=$('#stateBtns');
+states.forEach((s,i)=>{const b=document.createElement('button');b.className='state';b.innerHTML=`<span class="sid">${s.id}</span>${s.name}`;b.onclick=()=>pickState(i);sb.appendChild(b);});
+function pickState(i){const s=states[i];ns.set({notch:s.notch,tri:s.tri,stage:s.stage});$('#nTitle').textContent=s.id+' · '+s.name;$('#nNote').textContent=s.note;sb.querySelectorAll('.state').forEach((b,k)=>b.setAttribute('aria-pressed',k===i));}
+pickState(3);
+})();
+</script>
