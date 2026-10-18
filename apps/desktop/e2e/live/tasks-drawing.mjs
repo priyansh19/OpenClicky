@@ -1,4 +1,4 @@
-// Drawing tasks from test-suite/drawing-catalogue.md that can be checked from Clicky's own log
+// Drawing tasks from docs/testing/catalogues/drawing-catalogue.md that can be checked from Clicky's own log
 // ("overlay draw <kind> on display … at <points>") plus a screenshot for review. Overlay tasks run
 // on a clear desktop (every window minimised first, restored after).
 const clear = '(New-Object -ComObject Shell.Application).MinimizeAll(); Start-Sleep 1';

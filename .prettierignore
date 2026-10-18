@@ -5,3 +5,4 @@ release
 pnpm-lock.yaml
 spike
 *.md
+docs

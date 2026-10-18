@@ -1,4 +1,4 @@
-// Live tasks from the multi-step catalogue (test-suite/multistep-catalogue.md): what to say, how
+// Live tasks from the multi-step catalogue (docs/testing/catalogues/multistep-catalogue.md): what to say, how
 // to set the PC up, and how to check the result. Checks are PowerShell (with win.ps1 loaded); each
 // `check` returns text that `pass` judges. `allow` says whether to allow risky steps when asked.
 const docs = "[Environment]::GetFolderPath('MyDocuments')";

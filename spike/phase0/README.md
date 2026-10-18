@@ -1,6 +1,6 @@
 # Phase 0 spike (throwaway)
 
-Proves hold-to-talk, the click-through overlay and capture speed on real Windows hardware. Not part of the app; results are in [`docs/reference-findings.md`](../../docs/reference-findings.md).
+Proves hold-to-talk, the click-through overlay and capture speed on real Windows hardware. Not part of the app; results are in [`docs/research/reference-findings.md`](../../docs/research/reference-findings.md).
 
 ```
 npm install

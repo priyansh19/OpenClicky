@@ -4,7 +4,7 @@ Every case where what was said, what Clicky heard, and what it did didn't line u
 
 | # | Said | Heard | What Clicky did | What it should have done | Cause |
 |---|---|---|---|---|---|
-| 1 | "Clicky, make a folder called Receipts on my desktop." | "Clicky. a folder called Receipts on my desktop." | Made the folder, but in the old C:\Users\gupta\Desktop | Make it on the OneDrive Desktop the user sees | Speech: dropped the verb. Paths: the model guessed the usual Desktop path (fixed: usual paths are now mapped to the real ones) |
+| 1 | "Clicky, make a folder called Receipts on my desktop." | "Clicky. a folder called Receipts on my desktop." | Made the folder, but in the old C:\Users\<user>\Desktop | Make it on the OneDrive Desktop the user sees | Speech: dropped the verb. Paths: the model guessed the usual Desktop path (fixed: usual paths are now mapped to the real ones) |
 | 2 | "Clicky, open example.com, then copy the heading…" | "Clicky. An example dot com. Then copy the heading…" | Got it right anyway | — | Speech: "open" heard as "an" |
 | 3 | "Clicky, open Calculator, work out 18% of 2450…" | "Clicking. Open calculator…" | Answered as a plain question and claimed it had written a note (it hadn't) | Do the task | Name heard as "Clicking" (fixed). The answer model also claimed an action it can't do |
 | 4 | "Clicky, open my GitHub notifications." | "Plicky, open my git hub notifications." | Opened them | — | Speech: name misheard ("Plicky" is now accepted) |

@@ -28,7 +28,7 @@ apps/desktop/         Electron app
   src/preload/        minimal typed contextBridge APIs
   src/renderer/       overlay, settings, hidden audio worker
   src/platform/       ALL OS-specific code: win32/, darwin/, linux/
-docs/                 plan, architecture, privacy, findings
+docs/                 index (README.md), plan, architecture, design, research, onboarding, testing, decisions
 ```
 
 ## Commands (target)
