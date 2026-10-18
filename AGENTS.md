@@ -28,6 +28,7 @@ apps/desktop/         Electron app
   src/preload/        minimal typed contextBridge APIs
   src/renderer/       overlay, settings, hidden audio worker
   src/platform/       ALL OS-specific code: win32/, darwin/, linux/
+apps/website/         static project website (no build step), published to GitHub Pages
 docs/                 plan, architecture, privacy, findings
 ```
 
