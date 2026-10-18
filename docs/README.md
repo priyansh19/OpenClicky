@@ -47,6 +47,9 @@ Start with these three:
 | [research/official-clicky-teardown.md](research/official-clicky-teardown.md) | Source-level teardown of farzaa/clicky (MIT), feature by feature, against our build. |
 | [research/rea-findings.md](research/rea-findings.md) | What REA (Reverse Engineer Anything, npm `rea-agents`) found in our own build, and the fixes. |
 | [research/heyclicky/app-1.0.53-findings.md](research/heyclicky/app-1.0.53-findings.md) | Our findings from a static teardown of the HeyClicky 1.0.53 macOS app: backend, voice, pointing, agents, integrations, onboarding, guardrails, and a ranked build list. |
+| [research/heyclicky/app-1.0.53/reverse-engineering.md](research/heyclicky/app-1.0.53/reverse-engineering.md) | The full raw teardown of HeyClicky 1.0.53 (about 10,000 lines), also split by topic in [sections/](research/heyclicky/app-1.0.53/sections/). Keys and tokens found in the app are redacted. |
+| [research/heyclicky/founder-videos-breakdown.md](research/heyclicky/founder-videos-breakdown.md) | Shot-by-shot breakdown and transcripts of the two founder stories. The videos themselves are not in the repo. |
+| [research/heyclicky/ad-gaps.md](research/heyclicky/ad-gaps.md), [ad-breakdown.html](research/heyclicky/ad-breakdown.html) | The raw ad analysis and captioned shot list (frames not included). |
 | [research/heyclicky/static-pass-2026-10-12.md](research/heyclicky/static-pass-2026-10-12.md) | The first, lighter static pass over the same app. |
 | [research/heyclicky/founder-videos-findings.md](research/heyclicky/founder-videos-findings.md) | What the HeyClicky founder stories show (screen-aware dictation, skills, background agents, onboarding) and what we took from them. |
 | [research/heyclicky/ad-findings.md](research/heyclicky/ad-findings.md) | Analysis of a HeyClicky creator ad and the gaps it revealed in pointing and drawing. |
