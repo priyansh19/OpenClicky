@@ -83,6 +83,9 @@ jobs:
         run: node scripts/fetch-bundle.mjs
       - name: Build installer
         working-directory: apps/desktop
+        # bash on every OS: PowerShell (the Windows default) splits -c.extraMetadata.version=… into
+        # two arguments, and electron-builder then tries to open ".extraMetadata.version=…" as a config file.
+        shell: bash
         run: >
           pnpm exec electron-vite build &&
           pnpm exec electron-builder ${{ matrix.flags }} --publish never
