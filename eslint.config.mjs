@@ -53,4 +53,9 @@ export default tseslint.config(
     files: ['apps/desktop/src/renderer/**/*.ts', 'apps/desktop/src/preload/**/*.ts'],
     languageOptions: { globals: { ...globals.browser } },
   },
+  {
+    // The website is plain browser JavaScript with no build step.
+    files: ['apps/website/**/*.js'],
+    languageOptions: { globals: { ...globals.browser } },
+  },
 );

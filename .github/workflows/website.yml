@@ -1,0 +1,33 @@
+name: Website
+
+# Publishes apps/website (a static folder, no build step) to GitHub Pages.
+# Needs Settings > Pages > Source set to "GitHub Actions" once.
+on:
+  push:
+    branches: [master]
+    paths: ['apps/website/**', '.github/workflows/website.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/website
+      - id: deployment
+        uses: actions/deploy-pages@v4

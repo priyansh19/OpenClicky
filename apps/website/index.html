@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>openclicky · an open-source ai buddy for your screen</title>
+    <meta
+      name="description"
+      content="Hold a key, ask about anything on your screen, hear the answer and watch a little blue triangle point at it. Free and open source, Windows first."
+    />
+    <meta property="og:title" content="openclicky" />
+    <meta property="og:description" content="An open-source AI buddy that lives on your desktop." />
+    <meta property="og:image" content="assets/clicky-draws-poster.jpg" />
+    <meta name="theme-color" content="#f5f5f5" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="main.js"></script>
+  </head>
+  <body>
+    <!-- The header is a desktop menu bar: app menus on the left, status items and a live clock on the right. -->
+    <header class="menubar">
+      <div class="menubar-row">
+        <nav class="left menu-items" aria-label="Main">
+          <a class="brand" href="#top">openclicky</a>
+          <a href="#features">features</a>
+          <a href="#how">how it works</a>
+          <a href="#open">open source</a>
+          <a href="#faq">faq</a>
+        </nav>
+        <a class="center-mark" href="#top" aria-label="openclicky home">
+          <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><use href="#tri" /></svg>
+        </a>
+        <div class="right menu-items">
+          <span class="status hide-sm" aria-hidden="true">
+            <svg viewBox="0 0 20 14" width="17" height="12">
+              <path
+                d="M10 13.2 6.6 9.4a5 5 0 0 1 6.8 0zM3.4 6.3a9.6 9.6 0 0 1 13.2 0l-1.6 1.7a7.3 7.3 0 0 0-10 0zM.2 3.1a14 14 0 0 1 19.6 0l-1.6 1.7a11.8 11.8 0 0 0-16.4 0z"
+              />
+            </svg>
+            <svg viewBox="0 0 26 13" width="24" height="12">
+              <rect
+                x=".6"
+                y=".6"
+                width="21.8"
+                height="11.8"
+                rx="3.2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect x="2.4" y="2.4" width="15" height="8.2" rx="1.6" />
+              <path d="M23.8 4.4c1 .3 1.6 1.1 1.6 2.1s-.6 1.8-1.6 2.1z" />
+            </svg>
+          </span>
+          <a class="hide-sm" href="https://github.com/priyansh19/OpenClicky" rel="noopener">github</a>
+          <time class="clock hide-sm" data-clock>10:00 am</time>
+          <a class="get" href="https://github.com/priyansh19/OpenClicky/releases/latest" rel="noopener">
+            <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><use href="#win" /></svg>
+            get openclicky
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- HERO: a desktop you can play with. Windows drag, stickers sit around, and the companion flies
+           between things and labels them, the same way the app points at your screen. -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="board-clip">
+          <div class="board" data-board>
+            <div class="win abs w-draw" style="--x: 168px; --y: 70px; --enter-delay: 0.12s" data-drag>
+              <div class="bar"><span class="title">clicky-draws.mp4</span><span class="caps"></span></div>
+              <div class="screen" style="width: 300px; height: 188px">
+                <video
+                  src="assets/clicky-draws.mp4"
+                  poster="assets/clicky-draws-poster.jpg"
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  data-lazy-video
+                ></video>
+              </div>
+              <span class="win-label">it-draws-too.mp4</span>
+            </div>
+
+            <div class="win abs w-settings" style="--x: 1010px; --y: 60px; --enter-delay: 0.16s" data-drag>
+              <div class="bar"><span class="title">Settings</span><span class="caps"></span></div>
+              <div class="screen settings" style="width: 270px; height: 176px">
+                <div class="set-side"><i></i><i class="on"></i><i></i><i></i><i></i></div>
+                <div class="set-main">
+                  <b>System</b>
+                  <span class="set-row">Display</span>
+                  <span class="set-row" data-target="the sound settings" id="t-sound">Sound</span>
+                  <span class="set-row">Notifications</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="win abs w-term hide-md" style="--x: 120px; --y: 520px; --enter-delay: 0.2s" data-drag>
+              <div class="bar dark"><span class="title">Terminal</span><span class="caps"></span></div>
+              <div class="screen term" style="width: 270px; height: 92px">
+                <code
+                  >&gt; pnpm install<br />&gt; pnpm dev<br /><span class="ok">ready</span> hold Right Ctrl and ask<span
+                    class="caret"
+                  ></span
+                ></code>
+              </div>
+            </div>
+
+            <div class="win abs w-notes hide-md" style="--x: 1080px; --y: 470px; --enter-delay: 0.24s" data-drag>
+              <div class="bar"><span class="title">Notepad</span><span class="caps"></span></div>
+              <div class="screen notes" style="width: 220px; height: 150px">
+                <p>todo<br />· learn excel pivots<br />· fix the wifi<br />· <s>find the export button</s></p>
+              </div>
+            </div>
+
+            <div class="notch abs hide-sm" style="--x: 560px; --y: 26px; --enter-delay: 0.3s">
+              <span class="pulse"></span> working · opening paint
+            </div>
+
+            <div class="keycap abs" style="--x: 560px; --y: 150px; --enter-delay: 0.28s" data-drag>
+              <span>right ctrl</span>
+            </div>
+            <div class="sticker mit abs hide-sm" style="--x: 1170px; --y: 360px; --enter-delay: 0.34s" data-drag>
+              MIT<small>licensed</small>
+            </div>
+            <div class="sticker stamp abs hide-md" style="--x: 300px; --y: 330px; --enter-delay: 0.38s" data-drag>
+              <span>open<br />source</span>
+            </div>
+            <div class="folder abs hide-sm" style="--x: 80px; --y: 330px; --enter-delay: 0.32s">
+              <i></i><span>homework</span>
+            </div>
+            <div class="folder abs hide-md" style="--x: 1330px; --y: 380px; --enter-delay: 0.36s">
+              <i></i><span>taxes 2026</span>
+            </div>
+            <span class="kao abs hide-sm" style="--x: 400px; --y: 250px; --enter-delay: 0.4s">( •_•)&gt;⌐■-■</span>
+            <span class="kao abs hide-sm" style="--x: 860px; --y: 140px; --enter-delay: 0.42s">ヽ(•‿•)ノ</span>
+            <span class="kao abs hide-md" style="--x: 980px; --y: 690px; --enter-delay: 0.44s">(⌐■_■)</span>
+            <span class="kao abs hide-md" style="--x: 330px; --y: 700px; --enter-delay: 0.46s">¯\_(ツ)_/¯</span>
+            <div
+              class="spinner abs hide-md"
+              style="--x: 1350px; --y: 130px; --enter-delay: 0.3s"
+              aria-hidden="true"
+            ></div>
+          </div>
+        </div>
+
+        <div class="hero-copy">
+          <h1 id="hero-title" class="wordmark">openclicky</h1>
+          <p class="hero-sub">an open-source ai buddy that lives on your desktop</p>
+          <div class="hero-cta">
+            <a
+              class="btn aqua"
+              id="t-download"
+              data-target="start here"
+              href="https://github.com/priyansh19/OpenClicky/releases/latest"
+              rel="noopener"
+            >
+              <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><use href="#win" /></svg>
+              download for windows
+            </a>
+            <a class="btn glass" href="#download">mac &amp; linux</a>
+          </div>
+          <p class="fine">free and open source · no account needed · windows 10 or later</p>
+        </div>
+
+        <!-- The companion. JS flies it between [data-target] elements; CSS alone keeps it bobbing if JS is off. -->
+        <div class="buddy" data-buddy aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30"><use href="#tri" /></svg>
+          <span class="buddy-label" data-buddy-label></span>
+        </div>
+      </section>
+
+      <!-- FEATURES: alternating rows. The row nearest the middle of the screen is lit, the rest fade back. -->
+      <section class="feat" id="features" aria-labelledby="feat-title">
+        <div class="sec-head">
+          <span class="chip">features</span>
+          <h2 id="feat-title">ask out loud, see where</h2>
+          <p class="sec-sub">
+            hold a key, say what you're stuck on, let go. it looks at your screen, talks you through it and points at
+            the exact spot.
+          </p>
+        </div>
+
+        <div class="feat-rows">
+          <article class="feat-row" data-row>
+            <div class="feat-side">
+              <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <p class="pill ask" data-typing="hey clicky, where do i export this as a pdf?"></p>
+              <p class="pill reply">top left, under file</p>
+              <div class="feat-copy">
+                <h3>it points at things</h3>
+                <p>a blue triangle flies to the button you need and labels it. no more hunting through menus.</p>
+              </div>
+            </div>
+            <div class="win scene">
+              <div class="bar"><span class="title">Report.docx</span><span class="caps"></span></div>
+              <div class="screen app">
+                <div class="ribbon">
+                  <span class="rb" data-scene-target>File</span><span class="rb">Home</span
+                  ><span class="rb">Insert</span><span class="rb">Layout</span><span class="rb">Review</span>
+                </div>
+                <div class="page">
+                  <i style="width: 70%"></i><i></i><i style="width: 85%"></i><i style="width: 60%"></i><i></i
+                  ><i style="width: 40%"></i>
+                </div>
+                <div class="scene-buddy" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" width="22" height="22"><use href="#tri" /></svg>
+                  <span>file → export</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat-row flip" data-row>
+            <div class="feat-side">
+              <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <p class="pill ask" data-typing="what does this error mean?"></p>
+              <p class="pill reply">on it!</p>
+              <div class="feat-copy">
+                <h3>it answers out loud</h3>
+                <p>
+                  replies stream as you hear them, sentence by sentence, so the first words arrive before the thinking
+                  is done.
+                </p>
+              </div>
+            </div>
+            <div class="win scene">
+              <div class="bar dark"><span class="title">Terminal</span><span class="caps"></span></div>
+              <div class="screen term big">
+                <code
+                  >&gt; npm run build<br /><span class="err">error</span> cannot find module './config'<br /><br /><span
+                    class="say"
+                    data-stream="that file was renamed. change the import on line 3 to ./settings and run it again."
+                  ></span
+                ></code>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat-row" data-row>
+            <div class="feat-side">
+              <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <p class="pill ask" data-typing="draw me a smiley and a star"></p>
+              <p class="pill reply">drawing now</p>
+              <div class="feat-copy">
+                <h3>it can draw too</h3>
+                <p>circles, arrows and notes right on top of your screen. handy for showing, not just telling.</p>
+              </div>
+            </div>
+            <div class="win scene">
+              <div class="bar"><span class="title">clicky-draws.mp4</span><span class="caps"></span></div>
+              <div class="screen media">
+                <video
+                  src="assets/clicky-draws.mp4"
+                  poster="assets/clicky-draws-poster.jpg"
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  data-lazy-video
+                ></video>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat-row flip" data-row>
+            <div class="feat-side">
+              <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <p class="pill ask" data-typing="hold right alt and just talk"></p>
+              <p class="pill reply">typed it for you</p>
+              <div class="feat-copy">
+                <h3>dictate into any app</h3>
+                <p>hold right alt and speak. your words land wherever the caret is, in any app, word for word.</p>
+              </div>
+            </div>
+            <div class="win scene">
+              <div class="bar"><span class="title">Mail · New message</span><span class="caps"></span></div>
+              <div class="screen mail">
+                <span class="field">To: <b>sam</b></span>
+                <span class="field">Subject: <b>friday</b></span>
+                <p
+                  class="body"
+                  data-stream="hey sam, running ten minutes late. start without me and i'll catch up on the notes."
+                ></p>
+              </div>
+            </div>
+          </article>
+
+          <article class="feat-row" data-row>
+            <div class="feat-side">
+              <div class="wave quiet" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <p class="pill ask" data-typing="can it work offline?"></p>
+              <p class="pill reply">yep, all local</p>
+              <div class="feat-copy">
+                <h3>runs on your machine</h3>
+                <p>
+                  the windows installer ships an open model and on-device speech, so your first question needs no
+                  account or key. plug in a cloud model whenever you like.
+                </p>
+              </div>
+            </div>
+            <div class="win scene">
+              <div class="bar"><span class="title">openclicky · ai and voice</span><span class="caps"></span></div>
+              <div class="screen models">
+                <label class="opt on"><span class="dot"></span>built-in open model <em>local</em></label>
+                <label class="opt"><span class="dot"></span>openrouter <em>your key</em></label>
+                <label class="opt"><span class="dot"></span>anthropic <em>your key</em></label>
+                <label class="opt"><span class="dot"></span>ollama <em>local</em></label>
+                <span class="hint">keys are kept in windows' encrypted store, never in plain files</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- HOW: three keycaps. -->
+      <section class="how" id="how" aria-labelledby="how-title">
+        <div class="sec-head">
+          <span class="chip">how it works</span>
+          <h2 id="how-title">one key, three beats</h2>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="keycap big"><span>right ctrl</span></span>
+            <h3>hold</h3>
+            <p>press and hold. it starts listening and takes a quick look at your screen.</p>
+          </li>
+          <li>
+            <span class="mic" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <h3>ask</h3>
+            <p>“how do i split this cell?” “what's this chart saying?” anything, out loud.</p>
+          </li>
+          <li>
+            <span class="tri-demo" aria-hidden="true"
+              ><svg viewBox="0 0 32 32" width="40" height="40"><use href="#tri" /></svg
+            ></span>
+            <h3>let go</h3>
+            <p>hear the answer right away and watch the triangle point at the spot.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- OPEN SOURCE: marquee heading over a hand-drawn sky, with promise cards styled as small windows. -->
+      <section class="open" id="open" aria-labelledby="open-title">
+        <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="marquee" aria-hidden="true">
+          <div class="track">
+            <span>built in the open</span><span>built in the open</span><span>built in the open</span
+            ><span>built in the open</span><span>built in the open</span><span>built in the open</span>
+          </div>
+        </div>
+        <div class="sec-head light">
+          <span class="chip">open source</span>
+          <h2 id="open-title">free, open, <em>yours</em></h2>
+          <p class="sec-sub">every line is on github under the MIT license. read it, fork it, make it better.</p>
+        </div>
+
+        <div class="promise-grid">
+          <div class="win card" style="--tint: #cfe3ff">
+            <div class="bar"><span class="title">license</span><span class="caps"></span></div>
+            <div class="screen">
+              <h3>MIT, no strings</h3>
+              <p>use it, change it, ship it. no account, no paywall, no message caps.</p>
+            </div>
+          </div>
+          <div class="win card" style="--tint: #d6f5dd">
+            <div class="bar"><span class="title">privacy</span><span class="caps"></span></div>
+            <div class="screen">
+              <h3>screenshots stay in memory</h3>
+              <p>it only looks while you hold the key, and drops the image when the answer ends.</p>
+            </div>
+          </div>
+          <div class="win card" style="--tint: #ffe1cc">
+            <div class="bar"><span class="title">models</span><span class="caps"></span></div>
+            <div class="screen">
+              <h3>bring any model</h3>
+              <p>built-in local model, ollama, openrouter or anthropic. switch any time.</p>
+            </div>
+          </div>
+          <div class="win card" style="--tint: #efdcff">
+            <div class="bar"><span class="title">keys</span><span class="caps"></span></div>
+            <div class="screen">
+              <h3>keys locked away</h3>
+              <p>api keys live in the system's encrypted store, never in logs or plain files.</p>
+            </div>
+          </div>
+          <div class="win card" style="--tint: #fff3bf">
+            <div class="bar"><span class="title">speed</span><span class="caps"></span></div>
+            <div class="screen">
+              <h3>streams end to end</h3>
+              <p>speech in, words out, voice back, all streaming, so answers start fast.</p>
+            </div>
+          </div>
+          <div class="win card" style="--tint: #ffd6e0">
+            <div class="bar"><span class="title">platforms</span><span class="caps"></span></div>
+            <div class="screen">
+              <h3>windows first</h3>
+              <p>built and tested on windows. mac and linux builds come from the same code.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="download" id="download">
+          <a class="dl win" href="https://github.com/priyansh19/OpenClicky/releases/latest" rel="noopener">
+            <div class="bar"><span class="title">windows</span><span class="caps"></span></div>
+            <div class="screen">
+              <svg viewBox="0 0 16 16" width="28" height="28" aria-hidden="true"><use href="#win" /></svg
+              ><b>windows 10 / 11</b><span>setup .exe</span><span class="btn aqua sm">download</span>
+            </div>
+          </a>
+          <a class="dl win" href="https://github.com/priyansh19/OpenClicky/releases/latest" rel="noopener">
+            <div class="bar"><span class="title">macos</span><span class="caps"></span></div>
+            <div class="screen">
+              <svg viewBox="0 0 16 16" width="28" height="28" aria-hidden="true"><use href="#apple" /></svg><b>macos</b
+              ><span>apple silicon .dmg, early build</span><span class="btn glass sm">download</span>
+            </div>
+          </a>
+          <a class="dl win" href="https://github.com/priyansh19/OpenClicky/releases/latest" rel="noopener">
+            <div class="bar"><span class="title">linux</span><span class="caps"></span></div>
+            <div class="screen">
+              <svg viewBox="0 0 16 16" width="28" height="28" aria-hidden="true"><use href="#linux" /></svg
+              ><b>linux (x11)</b><span>appimage or .deb (x64), early build</span
+              ><span class="btn glass sm">download</span>
+            </div>
+          </a>
+        </div>
+        <p class="fine light">
+          builds are unsigned for now, so windows may show a smartscreen prompt the first time. all releases live on
+          <a href="https://github.com/priyansh19/OpenClicky/releases" rel="noopener">github releases</a>.
+        </p>
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq" id="faq" aria-labelledby="faq-title">
+        <div class="sec-head">
+          <span class="chip">faq</span>
+          <h2 id="faq-title">questions, answered</h2>
+        </div>
+        <div class="faq-list">
+          <details open>
+            <summary>what is openclicky?</summary>
+            <p>
+              a small companion for your desktop. hold right ctrl, ask about whatever is on your screen, and it answers
+              out loud while a blue triangle points at the right spot. it's an open-source take on the clicky idea,
+              built windows first.
+            </p>
+          </details>
+          <details>
+            <summary>is it really free?</summary>
+            <p>
+              yes. it's MIT licensed, and the windows installer includes a local model and voices, so it works without
+              an account or an api key. the mac and linux builds start you on a cloud model with your own key for now.
+              if you use a cloud key, you pay that provider directly.
+            </p>
+          </details>
+          <details>
+            <summary>does it watch my screen all the time?</summary>
+            <p>
+              no. it only captures while you're holding the key, shows that it's looking, and throws the screenshot away
+              when the answer is done.
+            </p>
+          </details>
+          <details>
+            <summary>where do my screenshots and voice go?</summary>
+            <p>
+              with the built-in model, nowhere: everything runs on your computer. with a cloud model, the screenshot and
+              your question go to the provider you picked. the privacy doc in the repo lists exactly what each provider
+              receives.
+            </p>
+          </details>
+          <details>
+            <summary>which apps does it work with?</summary>
+            <p>
+              anything you can see. it reads the screen like you do, so it works with office apps, browsers, editors,
+              games and settings pages alike.
+            </p>
+          </details>
+          <details>
+            <summary>does it run on mac or linux?</summary>
+            <p>
+              windows is the main target and the best tested. mac and linux (x11) builds come from the same code and are
+              published with each release as early builds.
+            </p>
+          </details>
+          <details>
+            <summary>windows says the app is unrecognised. is that ok?</summary>
+            <p>
+              the builds aren't code-signed yet, so smartscreen warns on first launch. choose “more info”, then “run
+              anyway”. you can also build it yourself from source.
+            </p>
+          </details>
+          <details>
+            <summary>is this the official clicky?</summary>
+            <p>
+              no. openclicky is an independent open-source project inspired by farzaa/clicky. it isn't affiliated with
+              heyclicky.
+            </p>
+          </details>
+          <details>
+            <summary>how can i help?</summary>
+            <p>
+              try it, file issues, or send a pull request. the repo's agents guide explains the layout and the commands.
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="foot-cols">
+        <div>
+          <h4>product</h4>
+          <a href="#features">features</a><a href="#how">how it works</a><a href="#download">download</a>
+        </div>
+        <div>
+          <h4>project</h4>
+          <a href="https://github.com/priyansh19/OpenClicky" rel="noopener">github</a>
+          <a href="https://github.com/priyansh19/OpenClicky/releases" rel="noopener">releases</a>
+          <a href="https://github.com/priyansh19/OpenClicky/issues" rel="noopener">issues</a>
+        </div>
+        <div>
+          <h4>docs</h4>
+          <a href="https://github.com/priyansh19/OpenClicky/blob/master/docs/privacy.md" rel="noopener">privacy</a>
+          <a href="https://github.com/priyansh19/OpenClicky/blob/master/docs/architecture.md" rel="noopener"
+            >architecture</a
+          >
+          <a href="https://github.com/priyansh19/OpenClicky/blob/master/AGENTS.md" rel="noopener">contributing</a>
+        </div>
+        <div class="foot-note">
+          <h4>note</h4>
+          <p>openclicky only sees your screen while you hold the key. screenshots are never written to disk.</p>
+        </div>
+      </div>
+      <div class="foot-mark" aria-hidden="true">openclicky</div>
+      <p class="foot-legal">MIT licensed open source. inspired by farzaa/clicky, not affiliated with heyclicky.</p>
+    </footer>
+
+    <!-- Shared icons. -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <defs>
+        <linearGradient id="tri-fill" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stop-color="#1d4ed8" />
+          <stop offset="1" stop-color="#4f9bff" />
+        </linearGradient>
+        <!-- Equilateral triangle with softly rounded corners, tip up-left, like the app's cursor. -->
+        <symbol id="tri" viewBox="0 0 32 32">
+          <path
+            d="M5 5 27.5 11.5 11.5 27.5z"
+            fill="url(#tri-fill)"
+            stroke="#fff"
+            stroke-width="1.6"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="win" viewBox="0 0 16 16">
+          <path
+            fill="currentColor"
+            d="M0 2.2 6.5 1.3v6.3H0zM7.3 1.2 16 0v7.6H7.3zM0 8.4h6.5v6.3L0 13.8zM7.3 8.4H16V16l-8.7-1.2z"
+          />
+        </symbol>
+        <symbol id="apple" viewBox="0 0 16 16">
+          <path
+            fill="currentColor"
+            d="M11.2 8.5c0-1.6 1.3-2.4 1.4-2.4-.8-1.1-2-1.3-2.4-1.3-1-.1-2 .6-2.5.6s-1.3-.6-2.2-.6C4.4 4.8 3.3 5.5 2.7 6.6c-1.2 2.1-.3 5.2.9 6.9.6.8 1.2 1.7 2.1 1.7.8 0 1.2-.5 2.2-.5s1.3.5 2.2.5 1.5-.9 2-1.7c.6-.9.9-1.8.9-1.9 0 0-1.8-.7-1.8-3.1M9.6 3.6c.5-.6.8-1.3.7-2.1-.7 0-1.5.5-2 1.1-.4.5-.8 1.3-.7 2 .8.1 1.5-.4 2-1"
+          />
+        </symbol>
+        <symbol id="linux" viewBox="0 0 16 16">
+          <path
+            fill="currentColor"
+            d="M8 .5C6.3.5 5.4 2 5.4 3.8c0 1 .2 1.7-.3 2.6C4.3 7.8 3 9.4 3 11.3c0 .5.1.9.3 1.3-.6.3-1.3.5-1.3 1.1 0 .8 1.3.7 2.3 1 .9.3 1.4.8 2.1.8.6 0 .9-.3 1.6-.3s1 .3 1.6.3c.7 0 1.2-.5 2.1-.8 1-.3 2.3-.2 2.3-1 0-.6-.7-.8-1.3-1.1.2-.4.3-.8.3-1.3 0-1.9-1.3-3.5-2.1-4.9-.5-.9-.3-1.6-.3-2.6C10.6 2 9.7.5 8 .5m-1 2.6c.4 0 .6.4.6.9s-.2.8-.5.8-.6-.4-.6-.9.2-.8.5-.8m2 0c.3 0 .6.3.6.8s-.3.9-.6.9-.5-.3-.5-.8.2-.9.5-.9M8 5.2c.7 0 1.6.4 1.6.8S8.7 7 8 7s-1.6-.6-1.6-1 .9-.8 1.6-.8"
+          />
+        </symbol>
+      </defs>
+    </svg>
+  </body>
+</html>
